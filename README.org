@@ -1,0 +1,32 @@
+#+TITLE: Jackson's Archlinux Auto-installer
+
+This is a hard-coded set value script to deploy a UEFI Archlinux or Artix Linux system. It takes roughly 3 minutes from booting installation media to the time to reboot.
+
+* How to use
+** Mainline Archlinux
+*This set of scripts installs Mainline Archlinux.*
+
+#+BEGIN_SRC bash
+git clone https://gitlab.com/jadecell/archmatic.git
+cd archmatic
+cd mainline/
+./install.sh
+#+END_SRC
+
+While the script runs, it will ask which kernel you would like and which drive to install on (enter "sda" for /dev/sda). If a swap partition is used, it will ask if it is present. The last question before installation begins is the script will ask if the install loaction is an NVMe drive. The script will proceed with installation and ask for the hostname and username and passwords for the normal user and the root user. After the script is finished, you will need to reboot and remove the installation media during reboot.
+
+
+** Artix Linux
+*This set of scripts installs Artix Linux.*
+
+#+BEGIN_SRC bash
+git clone https://gitlab.com/jadecell/archmatic.git
+cd archmatic
+cd artix/
+./install.sh
+#+END_SRC
+
+While the script runs, it will ask which kernel you would like and which drive to install on (enter "sda" for /dev/sda). If a swap partition is used, it will ask if it is present. The desired init system will be selected before installation. The last question before installation begins is the script will ask if the install loaction is an NVMe drive. The script will proceed with installation and ask for the hostname and username and passwords for the normal user and the root user. After the script is finished, you will need to reboot and remove the installation media during reboot.
+
+* Contribution
+If you want to contribute code, you are free to make a pull request. I will look over it and most likely accept it. I am just one guy and I think I could add some features. My scripts would get better over time as I learn shell scripting.
