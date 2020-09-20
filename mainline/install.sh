@@ -42,11 +42,6 @@ parted $DRIVEPATH --script -- mkpart primary 513MiB -1
 parted $DRIVEPATH --script name 2 rootfs
 parted $DRIVEPATH --script set 1 boot on
 
-# Asks if the user has a swap partition
-
-SWAP="n"
-read -p "[CHOICE] Do you have a swap partition [y/n]? " SWAP
-
 # Makes the filesystems
 ISNVME=" "
 read -p "[CHOICE] Is your install drive an nvme device [y/n]? " ISNVME
@@ -55,13 +50,8 @@ PARTENDING=" "
 [ "$ISNVME" = "y" ] && PARTENDING="p" || PARTENDING=""
 
 echo "[INFO] Setting filesystems"
-mkfs.fat -F32 /dev/${DRIVELOCATION}${PARTENDING}1 1>/dev/null
+mkfs.fat -F 32 /dev/${DRIVELOCATION}${PARTENDING}1 1>/dev/null
 mkfs.ext4 /dev/${DRIVELOCATION}${PARTENDING}2 1>/dev/null
-
-# Optionally makes a swap filesystem if the user has a swap partition
-
-[ "$SWAP" = "y" ] && mkswap /dev/${DRIVELOCATION}${PARTENDING}3 1>/dev/null && swapon /dev/${DRIVELOCATION}${PARTENDING}3 1>/dev/null
-
 echo "[INFO] Successfully made all filesystems!"
 
 # Mount partitions
