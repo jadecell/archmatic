@@ -79,7 +79,7 @@ echo "[INFO] Successfully generated the FileSystem table!"
 
 # Copy the new script to the new root directory
 
-cp -f archmatic/mainline/chrooted.sh /mnt
+cp -f archmatic/mainline/standard/chrooted.sh /mnt
 
 # Change root and exec the part 2 script
 

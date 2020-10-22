@@ -1,9 +1,15 @@
 #!/bin/bash
 
+. /values
+
 # Declaring Variables
 
 HOSTNAME=
 USERNAME=
+
+# add encrypt and lvm2 to the hooks in /etc/mkinitcpio.conf
+sed -i -e 's/HOOKS=(base\ udev\ autodetect\ modconf\ block\ filesystems\ keyboard\ fsck)/HOOKS=(base\ udev\ autodetect\ modconf\ block\ encrypt\ lvm2\ filesystems\ keyboard\ fsck)/g' /etc/mkinitcpio.conf
+mkinitcpio -p $KERNEL
 
 # Asks the user for the hostname and username to use
 
@@ -65,11 +71,18 @@ echo "[INFO] Successfully set $USERNAME's password!"
 # Configures grub
 echo "[INFO] Installing and configuring grub..."
 
-pacman --needed --noconfirm -S grub 1>/dev/null 2>/dev/null
+pacman --needed --noconfirm -S grub
 
-grub-install --target=x86_64-efi --efi-directory=/boot/efi >>/dev/null 2>&1
+sed -i -e "s/GRUB_CMDLINE_LINUX_DEFAULT=\"loglevel=3\ quiet\"/GRUB_CMDLINE_LINUX_DEFAULT=\"loglevel=3\ cryptdevice=\/dev\/${DRIVELOCATION}${PARTENDING}3:volgroup0:allow-discards\ quiet\"/g" /etc/default/grub
+sed -i -e 's/#GRUB_ENABLE_CRYPTODISK=y/GRUB_ENABLE_CRYPTODISK=y/g' /etc/default/grub
+mkdir /boot/EFI
+mount /dev/${DRIVELOCATION}${PARTENDING}1 /boot/EFI
 
-grub-mkconfig -o /boot/grub/grub.cfg 1>/dev/null
+grub-install --target=x86_64-efi --bootloader-id=grub_uefi --recheck
+mkdir /boot/grub/locale
+cp /usr/share/locale/en\@quot/LC_MESSAGES/grub.mo /boot/grub/locale/en.mo
+
+grub-mkconfig -o /boot/grub/grub.cfg
 
 echo "[INFO] Successfully installed configured grub!"
 
@@ -91,7 +104,7 @@ echo "[INFO] Successfully set NetworkManager to run at boot time!"
 
 # Copies all install scripts to the new system
 echo "[INFO] Copying all install scripts to new system..."
-git clone https://gitlab.com/jadecell/installscripts.git 
+git clone https://gitlab.com/jadecell/installscripts.git
 cp -rf installscripts/ /home/$USERNAME/installscripts
 chown $USERNAME:$USERNAME /home/$USERNAME/installscripts
 chown $USERNAME:$USERNAME /home/$USERNAME/installscripts/*
@@ -103,4 +116,3 @@ echo "----------------------------------------------------------------------"
 echo "Successfully finished! Reboot now."
 echo "----------------------------------------------------------------------"
 echo " "
-
