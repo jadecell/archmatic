@@ -67,7 +67,7 @@ read -p "How many GB should the root partition be? " ROOTFSSIZE
 # LVM/LUKS partitioning
 pvcreate --dataalignment 1m /dev/mapper/lvm
 vgcreate volgroup0 /dev/mapper/lvm
-lvcreate -L $ROOTFSSIZE volgroup0 -n lv_root
+lvcreate -L ${ROOTFSSIZE}GB volgroup0 -n lv_root
 lvcreate -l 95%FREE volgroup0 -n lv_home
 mkfs.ext4 /dev/volgroup0/lv_root
 mkfs.ext4 /dev/volgroup0/lv_home
