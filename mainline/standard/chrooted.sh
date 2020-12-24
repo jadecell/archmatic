@@ -1,33 +1,51 @@
-#!/bin/bash
+#!/bin/sh
 
-# Declaring Variables
+#                    -@
+#                   .##@
+#                  .####@
+#                  @#####@
+#                . *######@
+#               .##@o@#####@
+#              /############@
+#             /##############@
+#            @######@**%######@
+#           @######`     %#####o
+#          @######@       ######%
+#        -@#######h       ######@.`
+#       /#####h**``       `**%@####@
+#      @H@*`                    `*%#@
+#     *`                            `*
 
-HOSTNAME=
-USERNAME=
+# Arch install script made by Jackson
+# Post-chroot
 
-# Asks the user for the hostname and username to use
+# Source the colors
+. /colors
 
-read -p "Enter a hostname: " HOSTNAME
-read -p "Enter a username: " USERNAME
+# Source the functions
+. /functions
+
+# Source the values
+. /values
 
 # Sets timezone to Vancouvers timezone
 
-echo "[INFO] Setting timezone..."
-ln -sf /usr/share/zoneinfo/America/Vancouver /etc/localtime 1>/dev/null
-echo "[INFO] Successfully set the timezone!"
+info "Setting timezone"
+ln -sf /usr/share/zoneinfo/America/Vancouver /etc/localtime >/dev/null 2>&1
+info "Successfully set the timezone"
 
 # Sets hardware clock
 
-echo "[INFO] Setting hardware clock..."
+info "Setting hardware clock"
 hwclock --systohc
-echo "[INFO] Successfully set the hardware clock!"
+info "Successfully set the hardware clock"
 
 # Generate locales
 
-echo "[INFO] Generating locales..."
+info "Generating locales"
 echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
 
-locale-gen 1>/dev/null
+locale-gen >/dev/null 2>&1
 
 # Create locale.conf
 
@@ -36,23 +54,50 @@ echo "[INFO] Successfully generated locales!"
 
 # Sets hostname
 
-echo "[INFO] Setting hostname..."
+info "Setting hostname"
 echo "$HOSTNAME" >> /etc/hostname
-echo "[INFO] Successfully set the hostname!"
+info "Successfully set the hostname"
 
 # Generates host file
 
-echo "[INFO] Generating the hosts file..."
+info "Generating the hosts file"
 echo "127.0.0.1		localhost" > /etc/hosts
 echo "::1			localhost" >> /etc/hosts
 echo "127.0.1.1		$HOSTNAME.localdomain       $HOSTNAME" >> /etc/hosts
-echo "[INFO] Successfully generated the hosts file!"
+info "Successfully generated the hosts file"
+
+# Configures grub
+info "Installing and configuring grub"
+pacman --needed --noconfirm -S grub >/dev/null 2>&1
+grub-install --target=x86_64-efi --efi-directory=/boot/efi >/dev/null 2>&1
+grub-mkconfig -o /boot/grub/grub.cfg >/dev/null 2>&1
+info "Successfully installed configuring grub"
+
+# Adding user to sudoers file
+
+info "Adding $USERNAME to the sudoers file"
+echo " " >> /etc/sudoers
+echo "## Main users permissions" >> /etc/sudoers
+echo "$USERNAME ALL=(ALL) ALL" >> /etc/sudoers
+info "Successfully add $USERNAME to the sudoers file"
+
+# Starting NetworkManager at boot
+
+info "Setting NetworkManager to start at boot time"
+systemctl enable NetworkManager 1>/dev/null
+info "Successfully set NetworkManager to run at boot time"
+
+# Copies all install scripts to the new system
+info "Copying all install scripts to new system"
+cd /home/$USERNAME
+git clone https://gitlab.com/jadecell/installscripts.git
+chown -R $USERNAME:$USERNAME installscripts/
 
 # Root password
 
 echo "---------------------SET ROOT PASSWORD---------------------"
 passwd
-echo "[INFO] Successfully set the root password!"
+info "Successfully set the root password"
 
 # Add the normal user
 
@@ -60,46 +105,9 @@ useradd -mG wheel,audio,video,storage,optical -s /bin/bash $USERNAME
 
 echo "---------------------SET $USERNAME's PASSWORD---------------------"
 passwd $USERNAME
-echo "[INFO] Successfully set $USERNAME's password!"
-
-# Configures grub
-echo "[INFO] Installing and configuring grub..."
-
-pacman --needed --noconfirm -S grub 1>/dev/null 2>/dev/null
-
-grub-install --target=x86_64-efi --efi-directory=/boot/efi >>/dev/null 2>&1
-
-grub-mkconfig -o /boot/grub/grub.cfg 1>/dev/null
-
-echo "[INFO] Successfully installed configured grub!"
-
-# Adding user to sudoers file
-
-echo "[INFO] Adding $USERNAME to the sudoers file..."
-
-echo " " >> /etc/sudoers
-echo "## Main users permissions" >> /etc/sudoers
-echo "$USERNAME ALL=(ALL) ALL" >> /etc/sudoers
-
-echo "[INFO] Successfully added $USERNAME to the sudoers file!"
-
-# Starting NetworkManager at boot
-
-echo "[INFO] Setting NetworkManager to start at boot time..."
-systemctl enable NetworkManager 1>/dev/null
-echo "[INFO] Successfully set NetworkManager to run at boot time!"
-
-# Copies all install scripts to the new system
-echo "[INFO] Copying all install scripts to new system..."
-git clone https://gitlab.com/jadecell/installscripts.git
-cp -rf installscripts/ /home/$USERNAME/installscripts
-chown $USERNAME:$USERNAME /home/$USERNAME/installscripts
-chown $USERNAME:$USERNAME /home/$USERNAME/installscripts/*
-chmod 744 /home/$USERNAME/installscripts/*
+info "Successfully set $USERNAME's password"
 
 # Finished
 echo " "
-echo "----------------------------------------------------------------------"
-echo "Successfully finished! Reboot now."
-echo "----------------------------------------------------------------------"
+echo "${GREEN}Successfully finished!${NC} ${RED}Reboot now.${NC}"
 echo " "

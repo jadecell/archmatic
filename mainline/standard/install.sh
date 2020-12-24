@@ -1,21 +1,54 @@
-#!/bin/bash
+#!/bin/sh
+
+#                    -@
+#                   .##@
+#                  .####@
+#                  @#####@
+#                . *######@
+#               .##@o@#####@
+#              /############@
+#             /##############@
+#            @######@**%######@
+#           @######`     %#####o
+#          @######@       ######%
+#        -@#######h       ######@.`
+#       /#####h**``       `**%@####@
+#      @H@*`                    `*%#@
+#     *`                            `*
+
+# Arch install script made by Jackson
+# Pre-chroot
+
+# Source the colors
+. /root/archmatic/colors
+
+# Source the functions
+. /root/archmatic/functions
+
+# Checks for UEFI
+[ ! -d /sys/firmware/efi/efivars ] && "Non UEFI system detected. Please use an UEFI system and re run." && exit 1
 
 # Sets ntp on the system clock
 
-echo "[INFO] Setting ntp..."
+choice "Enter hostname" "" HOSTNAME
+choice "Enter normal user's name" "" USERNAME
+
+info "Setting ntp"
 timedatectl set-ntp true
-echo "[INFO] Successfully set ntp!"
+info "Successfully set ntp"
 
 # Asks the user what kernel to install
+clear
 KERNELCHOICE=" "
-echo "[CHOICE] Which kernel would you like to install?"
-echo "1) Linux"
-echo "2) Linux LTS"
-echo "3) Linux Zen"
-echo "4) Linux Hardened"
+echo -e "${CYAN}[CHOICE] Which kernel would you like to install?${NC}"
+echo -e "1) ${RED}Linux${NC}"
+echo -e "2) ${CYAN}Linux LTS${NC}"
+echo -e "3) ${MAGENTA}Linux Zen${NC}"
+echo -e "4) ${YELLOW}Linux Hardened${NC}"
 
-read -p "Choice: " KERNELCHOICE
+read -p "${CYAN}Choice: ${NC}" KERNELCHOICE
 
+# Sets the kernel
 KERNEL=" "
 case $KERNELCHOICE in
     "1") KERNEL="linux" ;;
@@ -28,8 +61,7 @@ esac
 # Asks for the drive location for Arch to be installed on
 
 lsblk
-DRIVELOCATION=" "
-read -p "[CHOICE] What is your drive name? " DRIVELOCATION
+choice "What is your drive name" "" DRIVELOCATION
 
 # Runs the disk partioning program
 
@@ -43,24 +75,22 @@ parted $DRIVEPATH --script name 2 rootfs
 parted $DRIVEPATH --script set 1 boot on
 
 # Makes the filesystems
-ISNVME=" "
-read -p "[CHOICE] Is your install drive an nvme device [y/n]? " ISNVME
+NVMETEXT=$(echo $DRIVEPATH | cut -d'/' -f3 | cut -c 1-4)
+[ "$NVMETEXT" = "nvme" ] && PARTENDING="p" || PARTENDING=""
 
-PARTENDING=" "
-[ "$ISNVME" = "y" ] && PARTENDING="p" || PARTENDING=""
 
-echo "[INFO] Setting filesystems"
+info "Setting the filesystem"
 mkfs.fat -F 32 /dev/${DRIVELOCATION}${PARTENDING}1 1>/dev/null
 mkfs.ext4 /dev/${DRIVELOCATION}${PARTENDING}2 1>/dev/null
-echo "[INFO] Successfully made all filesystems!"
+info "Successfully made all filesystems"
 
 # Mount partitions
 
-echo "[INFO] Mounting all partitions"
+info "Mounting all partitions"
 mount -t ext4 /dev/${DRIVELOCATION}${PARTENDING}2 /mnt
 mkdir -p /mnt/boot/efi
 mount /dev/${DRIVELOCATION}${PARTENDING}1 /mnt/boot/efi
-echo "[INFO] Successfully mounted all partitions!"
+info "Successfully mounted all partitions"
 
 # Moves to root's home
 
@@ -68,18 +98,24 @@ cd /root
 
 # Installs software
 
-echo "[INFO] Installing all needed packages for a base system..."
-pacstrap /mnt base base-devel $KERNEL linux-firmware efibootmgr vim vi zsh nano curl wget sudo dhcpcd dhclient man-db man-pages networkmanager git 1>/dev/null 2>/dev/null
-echo "[INFO] Installed all packages!"
+info "Installing all needed packages for a base system"
+pacstrap /mnt base base-devel $KERNEL linux-firmware efibootmgr vim vi zsh nano curl wget sudo man-db man-pages networkmanager git >/dev/null 2>&1
+info "Installed all packages"
 
 # Generate the FileSystem Table
-echo "[INFO] Generating the FileSystem table..."
+info "Generating the FileSystem table"
 genfstab -U /mnt >> /mnt/etc/fstab
-echo "[INFO] Successfully generated the FileSystem table!"
+info "Successfully generated the FileSystem table"
 
 # Copy the new script to the new root directory
 
 cp -f archmatic/mainline/standard/chrooted.sh /mnt
+cp -f archmatic/mainline/standard/colors /mnt
+cp -f archmatic/mainline/standard/functions /mnt
+
+touch /mnt/values
+echo "HOSTNAME=\"$HOSTNAME\"" > /mnt/values
+echo "USERNAME=\"$USERNAME\"" > /mnt/values
 
 # Change root and exec the part 2 script
 
