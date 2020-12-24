@@ -80,8 +80,8 @@ NVMETEXT=$(echo $DRIVEPATH | cut -d'/' -f3 | cut -c 1-4)
 
 
 info "Setting the filesystem"
-mkfs.fat -F 32 /dev/${DRIVELOCATION}${PARTENDING}1 1>/dev/null
-mkfs.ext4 /dev/${DRIVELOCATION}${PARTENDING}2 1>/dev/null
+mkfs.fat -F 32 /dev/${DRIVELOCATION}${PARTENDING}1 >/dev/null 2>&1
+mkfs.ext4 /dev/${DRIVELOCATION}${PARTENDING}2 >/dev/null 2>&1
 info "Successfully made all filesystems"
 
 # Mount partitions

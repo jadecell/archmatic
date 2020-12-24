@@ -50,7 +50,7 @@ locale-gen >/dev/null 2>&1
 # Create locale.conf
 
 echo "LANG=en_US.UTF-8" >> /etc/locale.conf
-echo "[INFO] Successfully generated locales!"
+info "Successfully generated locales"
 
 # Sets hostname
 
@@ -84,18 +84,12 @@ info "Successfully add $USERNAME to the sudoers file"
 # Starting NetworkManager at boot
 
 info "Setting NetworkManager to start at boot time"
-systemctl enable NetworkManager 1>/dev/null
+systemctl enable NetworkManager >/dev/null 2>&1
 info "Successfully set NetworkManager to run at boot time"
-
-# Copies all install scripts to the new system
-info "Copying all install scripts to new system"
-cd /home/$USERNAME
-git clone https://gitlab.com/jadecell/installscripts.git
-chown -R $USERNAME:$USERNAME installscripts/
 
 # Root password
 
-echo "---------------------SET ROOT PASSWORD---------------------"
+echo -e "${YELLOW}---------------------SET ${RED}ROOT${YELLOW} PASSWORD---------------------${NC}"
 passwd
 info "Successfully set the root password"
 
@@ -103,11 +97,11 @@ info "Successfully set the root password"
 
 useradd -mG wheel,audio,video,storage,optical -s /bin/bash $USERNAME
 
-echo "---------------------SET $USERNAME's PASSWORD---------------------"
+echo -e "${YELLOW}---------------------SET ${RED}$USERNAME${YELLOW}'s PASSWORD---------------------${NC}"
 passwd $USERNAME
 info "Successfully set $USERNAME's password"
 
 # Finished
 echo " "
-echo "${GREEN}Successfully finished!${NC} ${RED}Reboot now.${NC}"
+echo -e "${GREEN}Successfully finished!${NC} ${RED}Reboot now.${NC}"
 echo " "
