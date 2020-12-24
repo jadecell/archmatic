@@ -29,7 +29,7 @@
 . /values
 
 # Add encrypt and lvm2 to the hooks in /etc/mkinitcpio.conf
-[ "$LVMLUKS" = "y" ] && sed -i -e 's/HOOKS=(base\ udev\ autodetect\ modconf\ block\ filesystems\ keyboard\ fsck)/HOOKS=(base\ udev\ autodetect\ modconf\ block\ encrypt\ lvm2\ filesystems\ keyboard\ fsck)/g' /etc/mkinitcpio.conf && mkinitcpio -p $KERNEL
+[ "$LVMLUKS" = "y" ] && sed -i -e 's/HOOKS=(base\ udev\ autodetect\ modconf\ block\ filesystems\ keyboard\ fsck)/HOOKS=(base\ udev\ autodetect\ modconf\ block\ encrypt\ lvm2\ filesystems\ keyboard\ fsck)/g' /etc/mkinitcpio.conf && info "Generating the initramfs" && mkinitcpio -p $KERNEL >/dev/null 2>&1
 
 # Sets timezone to Vancouvers timezone
 info "Setting timezone"
@@ -74,15 +74,15 @@ if [[ "$LVMLUKS" = "y" ]]; then
     mkdir /boot/EFI
     mount /dev/${DRIVELOCATION}${PARTENDING}1 /boot/EFI
 
-fi
-
-grub-install --target=x86_64-efi --efi-directory=/boot/efi >/dev/null 2>&1
-grub-mkconfig -o /boot/grub/grub.cfg >/dev/null 2>&1
-
-if [[ "$LVMLUKS" = "y" ]]; then
-
+    grub-install --target=x86_64-efi --bootloader-id=grub_uefi --recheck >/dev/null 2>&1
+    grub-mkconfig -o /boot/grub/grub.cfg >/dev/null 2>&1
     mkdir /boot/grub/locale
     cp /usr/share/locale/en\@quot/LC_MESSAGES/grub.mo /boot/grub/locale/en.mo
+
+else
+
+    grub-install --target=x86_64-efi --efi-directory=/boot/efi >/dev/null 2>&1
+    grub-mkconfig -o /boot/grub/grub.cfg >/dev/null 2>&1
 
 fi
 
