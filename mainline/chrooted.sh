@@ -100,7 +100,11 @@ info "Setting NetworkManager to start at boot time"
 systemctl enable NetworkManager >/dev/null 2>&1
 info "Successfully set NetworkManager to run at boot time"
 
+git clone https://gitlab.com/jadecell/installscripts.git /home/$USERNAME/installscripts
+chown -R $USERNAME:$USERNAME /home/$USERNAME/installscripts
+
 # Root password
+clear
 echo -e "${YELLOW}---------------------SET ${RED}ROOT${YELLOW} PASSWORD---------------------${NC}"
 passwd
 info "Successfully set the root password"
@@ -108,11 +112,12 @@ info "Successfully set the root password"
 # Add the normal user
 useradd -mG wheel,audio,video,storage,optical -s /bin/bash $USERNAME
 
+clear
 echo -e "${YELLOW}---------------------SET ${RED}$USERNAME${YELLOW}'s PASSWORD---------------------${NC}"
 passwd $USERNAME
 info "Successfully set $USERNAME's password"
 
 # Finished
 echo " "
-echo -e "${GREEN}Successfully finished!${NC} ${RED}Reboot now.${NC}"
+echo -e "${GREEN}Successfully installed ${LIGHTCYAN}Arch${NC}! ${RED}Reboot now.${NC}"
 echo " "
