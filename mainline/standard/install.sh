@@ -33,20 +33,20 @@
 choice "Enter hostname" "" HOSTNAME
 choice "Enter normal user's name" "" USERNAME
 
-info "Setting ntp"
-timedatectl set-ntp true
-info "Successfully set ntp"
-
 # Asks the user what kernel to install
 clear
 KERNELCHOICE=" "
 echo -e "${CYAN}[CHOICE] Which kernel would you like to install?${NC}"
 echo -e "1) ${RED}Linux${NC}"
-echo -e "2) ${CYAN}Linux LTS${NC}"
+echo -e "2) ${GREEN}Linux LTS${NC}"
 echo -e "3) ${MAGENTA}Linux Zen${NC}"
 echo -e "4) ${YELLOW}Linux Hardened${NC}"
 
-read -p "${CYAN}Choice: ${NC}" KERNELCHOICE
+read -p "Choice: " KERNELCHOICE
+
+info "Setting ntp"
+timedatectl set-ntp true
+info "Successfully set ntp"
 
 # Sets the kernel
 KERNEL=" "
@@ -110,8 +110,8 @@ info "Successfully generated the FileSystem table"
 # Copy the new script to the new root directory
 
 cp -f archmatic/mainline/standard/chrooted.sh /mnt
-cp -f archmatic/mainline/standard/colors /mnt
-cp -f archmatic/mainline/standard/functions /mnt
+cp -f archmatic/colors /mnt
+cp -f archmatic/functions /mnt
 
 touch /mnt/values
 echo "HOSTNAME=\"$HOSTNAME\"" > /mnt/values
