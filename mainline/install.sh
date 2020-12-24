@@ -175,4 +175,4 @@ echo "LVMLUKS=\"$LVMLUKS\"" >> /mnt/values
 
 # Change root and exec the part 2 script
 
-arch-chroot /mnt ./chrooted.sh && rm -f /mnt/{values,chrooted.sh,functions}
+arch-chroot /mnt ./chrooted.sh && rm -f /mnt/{values,chrooted.sh,functions,colors}
