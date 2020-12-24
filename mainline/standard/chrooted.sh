@@ -55,7 +55,7 @@ info "Successfully generated locales"
 # Sets hostname
 
 info "Setting hostname"
-echo "$HOSTNAME" >> /etc/hostname
+echo "$HOSTNAME" > /etc/hostname
 info "Successfully set the hostname"
 
 # Generates host file

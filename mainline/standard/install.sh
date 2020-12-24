@@ -42,7 +42,7 @@ echo -e "2) ${GREEN}Linux LTS${NC}"
 echo -e "3) ${MAGENTA}Linux Zen${NC}"
 echo -e "4) ${YELLOW}Linux Hardened${NC}"
 
-read -p "Choice: " KERNELCHOICE
+read -P "${CYAN}Choice: " KERNELCHOICE
 
 info "Setting ntp"
 timedatectl set-ntp true
@@ -115,7 +115,7 @@ cp -f archmatic/functions /mnt
 
 touch /mnt/values
 echo "HOSTNAME=\"$HOSTNAME\"" > /mnt/values
-echo "USERNAME=\"$USERNAME\"" > /mnt/values
+echo "USERNAME=\"$USERNAME\"" >> /mnt/values
 
 # Change root and exec the part 2 script
 
