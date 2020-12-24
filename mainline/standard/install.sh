@@ -42,7 +42,7 @@ echo -e "2) ${GREEN}Linux LTS${NC}"
 echo -e "3) ${MAGENTA}Linux Zen${NC}"
 echo -e "4) ${YELLOW}Linux Hardened${NC}"
 
-read -P "${CYAN}Choice: " KERNELCHOICE
+read -p "Choice: " KERNELCHOICE
 
 info "Setting ntp"
 timedatectl set-ntp true
