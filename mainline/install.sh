@@ -86,8 +86,8 @@ if [[ "$LVMLUKS" = "y" ]]; then
     [ "$NVMETEXT" = "nvme" ] && PARTENDING="p" || PARTENDING=""
 
     info "Setting filesystems"
-    mkfs.fat -F 32 /dev/${DRIVELOCATION}${PARTENDING}1
-    mkfs.ext4 /dev/${DRIVELOCATION}${PARTENDING}2
+    mkfs.fat -F 32 /dev/${DRIVELOCATION}${PARTENDING}1 >/dev/null 2>&1
+    mkfs.ext4 /dev/${DRIVELOCATION}${PARTENDING}2 >/dev/null 2>&1
     cryptsetup luksFormat /dev/${DRIVELOCATION}${PARTENDING}3
     cryptsetup open --type luks /dev/${DRIVELOCATION}${PARTENDING}3 lvm
     info "Successfully made all filesystems"
@@ -95,12 +95,12 @@ if [[ "$LVMLUKS" = "y" ]]; then
     choice "How many GB should the root partition be" "" ROOTFSSIZE
 
     # LVM/LUKS partitioning
-    pvcreate --dataalignment 1m /dev/mapper/lvm
-    vgcreate volgroup0 /dev/mapper/lvm
-    lvcreate -L ${ROOTFSSIZE}GB volgroup0 -n lv_root
-    lvcreate -l 95%FREE volgroup0 -n lv_home
-    mkfs.ext4 /dev/volgroup0/lv_root
-    mkfs.ext4 /dev/volgroup0/lv_home
+    pvcreate --dataalignment 1m /dev/mapper/lvm >/dev/null 2>&1
+    vgcreate volgroup0 /dev/mapper/lvm >/dev/null 2>&1
+    lvcreate -L ${ROOTFSSIZE}GB volgroup0 -n lv_root >/dev/null 2>&1
+    lvcreate -l 95%FREE volgroup0 -n lv_home >/dev/null 2>&1
+    mkfs.ext4 /dev/volgroup0/lv_root >/dev/null 2>&1
+    mkfs.ext4 /dev/volgroup0/lv_home >/dev/null 2>&1
 
     # Mount partitions
     info "Mounting all partitions"
