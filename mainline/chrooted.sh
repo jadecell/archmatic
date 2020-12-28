@@ -102,6 +102,7 @@ info "Successfully set NetworkManager to run at boot time"
 
 git clone https://gitlab.com/jadecell/installscripts.git /home/$USERNAME/installscripts
 chown -R $USERNAME:$USERNAME /home/$USERNAME/installscripts
+chown -R $USERNAME:$USERNAME /home/$USERNAME
 
 # Root password
 clear
