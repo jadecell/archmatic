@@ -29,7 +29,6 @@
 [ ! -d /sys/firmware/efi/efivars ] && "Non UEFI system detected. Please use an UEFI system and re run." && exit 1
 
 # Sets ntp on the system clock
-
 choice "Enter hostname" "" HOSTNAME
 choice "Enter normal user's name" "" USERNAME
 choice "Is this an LVM/LUKS installation" "yn" LVMLUKS
