@@ -28,10 +28,28 @@
 # Checks for UEFI
 [ ! -d /sys/firmware/efi/efivars ] && "Non UEFI system detected. Please use an UEFI system and re run." && exit 1
 
-# Sets ntp on the system clock
-choice "Enter hostname" "" HOSTNAME
-choice "Enter normal user's name" "" USERNAME
-choice "Is this an LVM/LUKS installation" "yn" LVMLUKS
+usage () {
+    cat <<EOF
+    install.sh [OPTIONS]
+Options:
+    -h: hostname
+    -u: username for non root user
+    -l: toggles if the install is lvm/luks
+You will get prompted for all these values if not specified.
+    EOF
+    exit 1
+}
+
+while getopts "h:u:l" o; do case "${o}" in
+    h) HOSTNAME="${OPTARG}" ;;
+    u) USERNAME="${OPTARG}" ;;
+    l) LVMLUKS=y ;;
+    *) printf "Invalid options: -%s\\n" "$OPTARG" && usage ;;
+esac done
+
+[ -z "$HOSTNAME" ] && choice "Enter hostname" "" HOSTNAME
+[ -z "$USERNAME" ] && choice "Enter normal user's name" "" USERNAME
+[ -z "$LVMLUKS" ] && choice "Is this an LVM/LUKS installation" "yn" LVMLUKS
 
 # Asks the user what kernel to install
 clear
@@ -44,6 +62,7 @@ echo -e "4) ${YELLOW}Linux Hardened${NC}"
 
 read -p "Choice: " KERNELCHOICE
 
+# Sets ntp on the system clock
 info "Setting ntp"
 timedatectl set-ntp true
 info "Successfully set ntp"
