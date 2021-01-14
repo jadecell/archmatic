@@ -35,52 +35,58 @@ Options:
     -h: hostname
     -u: username for non root user
     -l: toggles if the install is lvm/luks
-You will get prompted for all these values if not specified.
-    EOF
+EOF
     exit 1
 }
 
-while getopts "h:u:l" o; do case "${o}" in
+# Collects all options
+while getopts "a:h:d:u:l" o; do case "${o}" in
+    a) AUTOMODE=y ;;
     h) HOSTNAME="${OPTARG}" ;;
+    d) DRIVELOCATION="${OPTARG}" ;;
     u) USERNAME="${OPTARG}" ;;
     l) LVMLUKS=y ;;
     *) printf "Invalid options: -%s\\n" "$OPTARG" && usage ;;
 esac done
 
-[ -z "$HOSTNAME" ] && choice "Enter hostname" "" HOSTNAME
-[ -z "$USERNAME" ] && choice "Enter normal user's name" "" USERNAME
-[ -z "$LVMLUKS" ] && choice "Is this an LVM/LUKS installation" "yn" LVMLUKS
+# Checks to see if automode is enabled
+if [[ "$AUTOMODE" = "y" ]]; then
+    LVMLUKS=n
+    HOSTNAME="archlinux"
+    USERNAME="jackson"
+    KERNEL="linux"
+    DRIVELOCATION="vda"
+else
+    [ -z "$HOSTNAME" ] && choice "Enter the hostname" "" HOSTNAME
+    [ -z "$USERNAME" ] && choice "Enter the username" "" USERNAME
+    [ -z "$LVMLUKS" ] && choice "Is this an LVM/LUKS installation" "yn" HOSTNAME
+    # Asks the user what kernel to install
+    clear
+    echo -e "${CYAN}[CHOICE] Which kernel would you like to install?${NC}"
+    echo -e "1) ${RED}Linux${NC}"
+    echo -e "2) ${GREEN}Linux LTS${NC}"
+    echo -e "3) ${MAGENTA}Linux Zen${NC}"
+    echo -e "4) ${YELLOW}Linux Hardened${NC}"
 
-# Asks the user what kernel to install
-clear
-KERNELCHOICE=" "
-echo -e "${CYAN}[CHOICE] Which kernel would you like to install?${NC}"
-echo -e "1) ${RED}Linux${NC}"
-echo -e "2) ${GREEN}Linux LTS${NC}"
-echo -e "3) ${MAGENTA}Linux Zen${NC}"
-echo -e "4) ${YELLOW}Linux Hardened${NC}"
+    read -p "Choice: " KERNELCHOICE
 
-read -p "Choice: " KERNELCHOICE
+    # Sets the kernel
+    case $KERNELCHOICE in
+        "1") KERNEL="linux" ;;
+        "2") KERNEL="linux-lts" ;;
+        "3") KERNEL="linux-zen" ;;
+        "4") KERNEL="linux-hardened" ;;
+        *) echo "[INFO] Default kernel was selected: Linux" && KERNEL="linux" ;;
+    esac
+
+    # Asks for the drive location for Arch to be installed on
+    [ -z "$DRIVELOCATION" ] && lsblk && choice "What is your drive name" "" DRIVELOCATION
+fi
 
 # Sets ntp on the system clock
 info "Setting ntp"
 timedatectl set-ntp true
 info "Successfully set ntp"
-
-# Sets the kernel
-KERNEL=" "
-case $KERNELCHOICE in
-    "1") KERNEL="linux" ;;
-    "2") KERNEL="linux-lts" ;;
-    "3") KERNEL="linux-zen" ;;
-    "4") KERNEL="linux-hardened" ;;
-    *) echo "[INFO] Default kernel was selected: Linux" && KERNEL="linux" ;;
-esac
-
-# Asks for the drive location for Arch to be installed on
-
-lsblk
-choice "What is your drive name" "" DRIVELOCATION
 
 # Runs the disk partioning program
 
