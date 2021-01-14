@@ -32,7 +32,9 @@ usage () {
     cat <<EOF
     install.sh [OPTIONS]
 Options:
+    -a: automatic mode
     -h: hostname
+    -d: drive location
     -u: username for non root user
     -l: toggles if the install is lvm/luks
 EOF
