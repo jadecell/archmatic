@@ -41,15 +41,20 @@ EOF
     exit 1
 }
 
+LVMLUKS=n
+
 # Collects all options
-while getopts "a:h:d:u:l" o; do case "${o}" in
-    a) AUTOMODE=y ;;
-    h) HOSTNAME="${OPTARG}" ;;
-    d) DRIVELOCATION="${OPTARG}" ;;
-    u) USERNAME="${OPTARG}" ;;
-    l) LVMLUKS=y ;;
-    *) printf "Invalid options: -%s\\n" "$OPTARG" && usage ;;
-esac done
+
+while getopts "a:h:d:u:l" o; do
+    case "$o" in
+        a) AUTOMODE=y ;;
+        h) HOSTNAME="${OPTARG}" ;;
+        d) DRIVELOCATION="${OPTARG}" ;;
+        u) USERNAME="${OPTARG}" ;;
+        l) LVMLUKS=y ;;
+        *) printf "Invalid options: -%s\\n" "$OPTARG" && usage ;;
+    esac
+done
 
 # Checks to see if automode is enabled
 if [[ "$AUTOMODE" = "y" ]]; then
@@ -61,7 +66,6 @@ if [[ "$AUTOMODE" = "y" ]]; then
 else
     [ -z "$HOSTNAME" ] && choice "Enter the hostname" "" HOSTNAME
     [ -z "$USERNAME" ] && choice "Enter the username" "" USERNAME
-    [ -z "$LVMLUKS" ] && choice "Is this an LVM/LUKS installation" "yn" HOSTNAME
     # Asks the user what kernel to install
     clear
     echo -e "${CYAN}[CHOICE] Which kernel would you like to install?${NC}"
