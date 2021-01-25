@@ -95,6 +95,12 @@ echo "## Main users permissions" >> /etc/sudoers
 echo "$USERNAME ALL=(ALL) ALL" >> /etc/sudoers
 info "Successfully add $USERNAME to the sudoers file"
 
+info "Adding persistant sudo across ttys/terminals"
+echo " " >> /etc/sudoers
+echo "## Disable tty tickets so you don't have to re-type your sudo pasword for every new process/terminal" >> /etc/sudoers
+echo "Defaults !tty_tickets" >> /etc/sudoers
+info "Added persistant sudo across ttys/terminals"
+
 # Starting NetworkManager at boot
 info "Setting NetworkManager to start at boot time"
 systemctl enable NetworkManager >/dev/null 2>&1
