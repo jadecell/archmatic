@@ -45,9 +45,8 @@ LVMLUKS=n
 
 # Collects all options
 
-while getopts "a:h:d:u:l" o; do
+while getopts "h:d:u:l" o; do
     case "$o" in
-        a) AUTOMODE=y ;;
         h) HOSTNAME="${OPTARG}" ;;
         d) DRIVELOCATION="${OPTARG}" ;;
         u) USERNAME="${OPTARG}" ;;
@@ -57,13 +56,6 @@ while getopts "a:h:d:u:l" o; do
 done
 
 # Checks to see if automode is enabled
-if [[ "$AUTOMODE" = "y" ]]; then
-    LVMLUKS=n
-    HOSTNAME="archlinux"
-    USERNAME="jackson"
-    KERNEL="linux"
-    DRIVELOCATION="vda"
-else
     [ -z "$HOSTNAME" ] && choice "Enter the hostname" "" HOSTNAME
     [ -z "$USERNAME" ] && choice "Enter the username" "" USERNAME
     # Asks the user what kernel to install
@@ -87,7 +79,6 @@ else
 
     # Asks for the drive location for Arch to be installed on
     [ -z "$DRIVELOCATION" ] && lsblk && choice "What is your drive name" "" DRIVELOCATION
-fi
 
 # Sets ntp on the system clock
 info "Setting ntp"
