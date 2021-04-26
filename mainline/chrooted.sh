@@ -29,11 +29,11 @@
 . /values
 
 # Add encrypt and lvm2 to the hooks in /etc/mkinitcpio.conf
-[ "$LVMLUKS" = "y" ] && sed -i -e 's/HOOKS=(base\ udev\ autodetect\ modconf\ block\ filesystems\ keyboard\ fsck)/HOOKS=(base\ udev\ autodetect\ modconf\ block\ encrypt\ lvm2\ filesystems\ keyboard\ fsck)/g' /etc/mkinitcpio.conf && info "Generating the initramfs" && mkinitcpio -p $KERNEL >/dev/null 2>&1
+[ "$LVMLUKS" = "y" ] && sed -i -e 's/HOOKS=(base\ udev\ autodetect\ modconf\ block\ filesystems\ keyboard\ fsck)/HOOKS=(base\ udev\ autodetect\ modconf\ block\ encrypt\ lvm2\ filesystems\ keyboard\ fsck)/g' /etc/mkinitcpio.conf && info "Generating the initramfs" && mkinitcpio -p $KERNEL > /dev/null 2>&1
 
 # Sets timezone to Vancouvers timezone
 info "Setting timezone"
-ln -sf /usr/share/zoneinfo/America/Vancouver /etc/localtime >/dev/null 2>&1
+ln -sf /usr/share/zoneinfo/America/Vancouver /etc/localtime > /dev/null 2>&1
 info "Successfully set the timezone"
 
 # Sets hardware clock
@@ -45,7 +45,7 @@ info "Successfully set the hardware clock"
 info "Generating locales"
 echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
 
-locale-gen >/dev/null 2>&1
+locale-gen > /dev/null 2>&1
 
 # Create locale.conf
 echo "LANG=en_US.UTF-8" >> /etc/locale.conf
@@ -65,7 +65,7 @@ info "Successfully generated the hosts file"
 
 # Configures grub
 info "Installing and configuring grub"
-pacman --needed --noconfirm -S grub >/dev/null 2>&1
+pacman --needed --noconfirm -S grub > /dev/null 2>&1
 
 if [[ "$LVMLUKS" = "y" ]]; then
 
@@ -74,15 +74,15 @@ if [[ "$LVMLUKS" = "y" ]]; then
     mkdir /boot/EFI
     mount /dev/${DRIVELOCATION}${PARTENDING}1 /boot/EFI
 
-    grub-install --target=x86_64-efi --bootloader-id=grub_uefi --recheck >/dev/null 2>&1
-    grub-mkconfig -o /boot/grub/grub.cfg >/dev/null 2>&1
-    mkdir /boot/grub/locale
+    grub-install --target=x86_64-efi --bootloader-id=grub_uefi --recheck > /dev/null 2>&1
+    grub-mkconfig -o /boot/grub/grub.cfg > /dev/null 2>&1
+    mkdir -p /boot/grub/locale
     cp /usr/share/locale/en\@quot/LC_MESSAGES/grub.mo /boot/grub/locale/en.mo
 
 else
 
-    grub-install --target=x86_64-efi --efi-directory=/boot/efi >/dev/null 2>&1
-    grub-mkconfig -o /boot/grub/grub.cfg >/dev/null 2>&1
+    grub-install --target=x86_64-efi --efi-directory=/boot > /dev/null 2>&1
+    grub-mkconfig -o /boot/grub/grub.cfg > /dev/null 2>&1
 
 fi
 
@@ -103,10 +103,10 @@ info "Added persistant sudo across ttys/terminals"
 
 # Starting NetworkManager at boot
 info "Setting NetworkManager to start at boot time"
-systemctl enable NetworkManager >/dev/null 2>&1
+systemctl enable NetworkManager > /dev/null 2>&1
 info "Successfully set NetworkManager to run at boot time"
 
-git clone https://gitlab.com/jadecell/installscripts.git /home/$USERNAME/installscripts
+git clone https://github.com/jadecell/installscripts.git /home/$USERNAME/installscripts
 chown -R $USERNAME:$USERNAME /home/$USERNAME
 
 # Root password
