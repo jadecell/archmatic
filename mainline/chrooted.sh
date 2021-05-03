@@ -89,11 +89,11 @@ fi
 info "Successfully installed configuring grub"
 
 # Adding user to sudoers file
-info "Adding $USERNAME to the sudoers file"
+info "Adding $USERNAMEOFUSER to the sudoers file"
 echo " " >> /etc/sudoers
 echo "## Main users permissions" >> /etc/sudoers
-echo "$USERNAME ALL=(ALL) ALL" >> /etc/sudoers
-info "Successfully add $USERNAME to the sudoers file"
+echo "$USERNAMEOFUSER ALL=(ALL) ALL" >> /etc/sudoers
+info "Successfully add $USERNAMEOFUSER to the sudoers file"
 
 info "Adding persistant sudo across ttys/terminals"
 echo " " >> /etc/sudoers
@@ -106,8 +106,8 @@ info "Setting NetworkManager to start at boot time"
 systemctl enable NetworkManager > /dev/null 2>&1
 info "Successfully set NetworkManager to run at boot time"
 
-git clone https://github.com/jadecell/installscripts.git /home/$USERNAME/installscripts
-chown -R $USERNAME:$USERNAME /home/$USERNAME
+git clone https://github.com/jadecell/installscripts.git /home/$USERNAMEOFUSER/installscripts
+chown -R $USERNAMEOFUSER:$USERNAMEOFUSER /home/$USERNAMEOFUSER
 
 # Root password
 clear
@@ -116,12 +116,12 @@ passwd
 info "Successfully set the root password"
 
 # Add the normal user
-useradd -mG wheel,audio,video,storage,optical -s /bin/bash $USERNAME
+useradd -mG wheel,audio,video,storage,optical -s /bin/bash $USERNAMEOFUSER
 
 clear
-echo -e "${YELLOW}---------------------SET ${RED}$USERNAME${YELLOW}'s PASSWORD---------------------${NC}"
-passwd $USERNAME
-info "Successfully set $USERNAME's password"
+echo -e "${YELLOW}---------------------SET ${RED}$USERNAMEOFUSER${YELLOW}'s PASSWORD---------------------${NC}"
+passwd $USERNAMEOFUSER
+info "Successfully set $USERNAMEOFUSER's password"
 
 # Finished
 echo " "

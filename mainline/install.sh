@@ -32,6 +32,7 @@ usage() {
     cat << EOF
     install.sh [OPTIONS]
 Options:
+    -h: prints this menu
     -n: hostname
     -d: drive location
     -u: username for non root user
@@ -44,19 +45,20 @@ LVMLUKS=n
 
 # Collects all options
 
-while getopts "n:d:u:l" o; do
+while getopts "n:d:u:l:h" o; do
     case "$o" in
         n) HOSTNAME="${OPTARG}" ;;
         d) DRIVELOCATION="${OPTARG}" ;;
-        u) USERNAME="${OPTARG}" ;;
+        u) USERNAMEOFUSER="${OPTARG}" ;;
         l) LVMLUKS=y ;;
+        h) usage ;;
         *) printf 'Invalid options: -%s\n' "$OPTARG" && usage ;;
     esac
 done
 
 # Checks to see if automode is enabled
 [ -z "$HOSTNAME" ] && choice "Enter the hostname" "" HOSTNAME
-[ -z "$USERNAME" ] && choice "Enter the username" "" USERNAME
+[ -z "$USERNAMEOFUSER" ] && choice "Enter the username" "" USERNAMEOFUSER
 # Asks the user what kernel to install
 clear
 echo -e "${CYAN}[CHOICE] Which kernel would you like to install?${NC}"
@@ -146,14 +148,18 @@ if [[ "$LVMLUKS" = "y" ]]; then
 
 else
 
+    printf "How many GB should the root partition be: "
+    read -r ROOTFSSIZE
+    ROOTFSSIZEPLUSONE=$((ROOTFSSIZE + 1))
+
     DRIVEPATH="/dev/$DRIVELOCATION"
     wipefs -a "$DRIVEPATH"
     parted -a optimal "$DRIVEPATH" --script mklabel gpt
     parted "$DRIVEPATH" --script -- mkpart primary 1MiB 513MiB
     parted "$DRIVEPATH" --script name 1 boot
-    parted "$DRIVEPATH" --script -- mkpart primary 513MiB 41513MiB
+    parted "$DRIVEPATH" --script -- mkpart primary 513MiB ${ROOTFSSIZEPLUSONE}513MiB
     parted "$DRIVEPATH" --script name 2 rootfs
-    parted "$DRIVEPATH" --script -- mkpart primary 40513MiB -1
+    parted "$DRIVEPATH" --script -- mkpart primary ${ROOTFSSIZEPLUSONE}513MiB -1
     parted "$DRIVEPATH" --script name 3 home
     parted "$DRIVEPATH" --script set 1 boot on
 
@@ -202,7 +208,7 @@ cp -f archmatic/{mainline/chrooted.sh,colors,functions} /mnt
 touch /mnt/values
 cat << EOF > /mnt/values
 HOSTNAME="$HOSTNAME"
-USERNAME="$USERNAME"
+USERNAMEOFUSER="$USERNAMEOFUSER"
 DRIVELOCATION="$DRIVELOCATION"
 PARTENDING=$PARTENDING"
 KERNEL="$KERNEL"
