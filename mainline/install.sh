@@ -107,9 +107,9 @@ if [[ "$LVMLUKS" = "y" ]]; then
     DRIVEPATH="/dev/$DRIVELOCATION"
     wipefs -a $DRIVEPATH
     parted -a optimal $DRIVEPATH --script mklabel gpt
-    parted $DRIVEPATH --script mkpart primary 1MiB 513MiB
+    parted $DRIVEPATH --script -- mkpart primary 1MiB 513MiB
     parted $DRIVEPATH --script name 1 efi
-    parted $DRIVEPATH --script mkpart primary 513MiB 1025MiB
+    parted $DRIVEPATH --script -- mkpart primary 513MiB 1025MiB
     parted $DRIVEPATH --script name 2 boot
     parted $DRIVEPATH --script -- mkpart primary 1025MiB -1
     parted $DRIVEPATH --script name 3 lvmpart
@@ -149,11 +149,11 @@ else
     DRIVEPATH="/dev/$DRIVELOCATION"
     wipefs -a "$DRIVEPATH"
     parted -a optimal "$DRIVEPATH" --script mklabel gpt
-    parted "$DRIVEPATH" --script mkpart primary 1MiB 513MiB
+    parted "$DRIVEPATH" --script -- mkpart primary 1MiB 513MiB
     parted "$DRIVEPATH" --script name 1 boot
-    parted "$DRIVEPATH" --script mkpart primary 513MiB 40513MiB
+    parted "$DRIVEPATH" --script -- mkpart primary 513MiB 41513MiB
     parted "$DRIVEPATH" --script name 2 rootfs
-    parted "$DRIVEPATH" --script mkpart primary 40513MiB -1
+    parted "$DRIVEPATH" --script -- mkpart primary 40513MiB -1
     parted "$DRIVEPATH" --script name 3 home
     parted "$DRIVEPATH" --script set 1 boot on
 
