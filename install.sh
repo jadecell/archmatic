@@ -48,11 +48,11 @@ esac
 
 # Asks the user what kernel to install
 clear
-printf "${CYAN}[CHOICE] Which kernel would you like to install?${NC}"
-printf "1) ${RED}Linux${NC}"
-printf "2) ${GREEN}Linux LTS${NC}"
-printf "3) ${MAGENTA}Linux Zen${NC}"
-printf "4) ${YELLOW}Linux Hardened${NC}"
+printf "${CYAN}[CHOICE] Which kernel would you like to install?${NC}\n"
+printf "1) ${RED}Linux${NC}\n"
+printf "2) ${GREEN}Linux LTS${NC}\n"
+printf "3) ${MAGENTA}Linux Zen${NC}\n"
+printf "4) ${YELLOW}Linux Hardened${NC}\n"
 
 printf "Choice: "
 read -r KERNELCHOICE
@@ -79,7 +79,7 @@ case $KERNELCHOICE in
         ;;
 esac
 
-sed -i -e 's/#\ ParallelDownloads\ =\ 5/ParallelDownloads\ =\ 5/g' /etc/pacman.conf
+sed -i -e 's/#ParallelDownloads\ =\ 5/ParallelDownloads\ =\ 5/g' /etc/pacman.conf
 
 # Sets ntp on the system clock
 
