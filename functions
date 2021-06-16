@@ -1,5 +1,7 @@
-info () {
-    echo -e "${CYAN}[INFO] $1${NC}"
+#!/usr/bin/env sh
+
+info() {
+	printf "\n[+] ${CYAN}$1${NC}\n"
 }
 
 choice () {

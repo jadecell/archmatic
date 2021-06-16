@@ -28,9 +28,6 @@
 # Source the values
 . /values
 
-# Add encrypt and lvm2 to the hooks in /etc/mkinitcpio.conf
-[ "$LVMLUKS" = "y" ] && sed -i -e 's/HOOKS=(base\ udev\ autodetect\ modconf\ block\ filesystems\ keyboard\ fsck)/HOOKS=(base\ udev\ autodetect\ modconf\ block\ encrypt\ lvm2\ filesystems\ keyboard\ fsck)/g' /etc/mkinitcpio.conf && info "Generating the initramfs" && mkinitcpio -p $KERNEL > /dev/null 2>&1
-
 # Sets timezone to Vancouvers timezone
 info "Setting timezone"
 ln -sf /usr/share/zoneinfo/America/Vancouver /etc/localtime > /dev/null 2>&1
@@ -67,24 +64,8 @@ info "Successfully generated the hosts file"
 info "Installing and configuring grub"
 pacman --needed --noconfirm -S grub > /dev/null 2>&1
 
-if [[ "$LVMLUKS" = "y" ]]; then
-
-    sed -i -e "s/GRUB_CMDLINE_LINUX_DEFAULT=\"loglevel=3\ quiet\"/GRUB_CMDLINE_LINUX_DEFAULT=\"loglevel=3\ cryptdevice=\/dev\/${DRIVELOCATION}${PARTENDING}3:volgroup0:allow-discards\ quiet\"/g" /etc/default/grub
-    sed -i -e 's/#GRUB_ENABLE_CRYPTODISK=y/GRUB_ENABLE_CRYPTODISK=y/g' /etc/default/grub
-    mkdir /boot/EFI
-    mount /dev/${DRIVELOCATION}${PARTENDING}1 /boot/EFI
-
-    grub-install --target=x86_64-efi --bootloader-id=grub_uefi --recheck > /dev/null 2>&1
-    grub-mkconfig -o /boot/grub/grub.cfg > /dev/null 2>&1
-    mkdir -p /boot/grub/locale
-    cp /usr/share/locale/en\@quot/LC_MESSAGES/grub.mo /boot/grub/locale/en.mo
-
-else
-
-    grub-install --target=x86_64-efi --efi-directory=/boot > /dev/null 2>&1
-    grub-mkconfig -o /boot/grub/grub.cfg > /dev/null 2>&1
-
-fi
+grub-install --target=x86_64-efi --efi-directory=/boot > /dev/null 2>&1
+grub-mkconfig -o /boot/grub/grub.cfg > /dev/null 2>&1
 
 info "Successfully installed configuring grub"
 
@@ -106,7 +87,6 @@ info "Setting NetworkManager to start at boot time"
 systemctl enable NetworkManager > /dev/null 2>&1
 info "Successfully set NetworkManager to run at boot time"
 
-git clone https://github.com/jadecell/installscripts.git /home/$USERNAMEOFUSER/installscripts
 chown -R $USERNAMEOFUSER:$USERNAMEOFUSER /home/$USERNAMEOFUSER
 
 # Root password
