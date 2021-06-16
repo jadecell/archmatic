@@ -39,10 +39,10 @@ fi
 
 case $INTELORAMD in
     i | I)
-        UCODE="intel"
+        PACKAGES_EXTRA="intel-ucode"
         ;;
     a | A)
-        UCODE="amd"
+        PACKAGES_EXTRA="amd-ucode"
         ;;
 esac
 
@@ -130,7 +130,6 @@ cd /root || exit 1
 # Installs software
 
 PACKAGES="base base-devel $KERNEL linux-firmware efibootmgr vim vi zsh nano curl wget sudo man-db man-pages networkmanager git btrfs-progs"
-PACKAGES_EXTRA="$UCODE-ucode"
 
 info "Installing all needed packages for a base system"
 pacstrap /mnt $PACKAGES $PACKAGES_EXTRA
