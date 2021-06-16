@@ -32,7 +32,8 @@ choice "Enter the hostname" "" HOSTNAME
 choice "Enter the username" "" USERNAMEOFUSER
 lsblk && choice "What is your drive name" "" DRIVELOCATION
 choice "Would you like ucode for the processor" "yn" UCODEBOOL
-if [ $UCODEBOOL ]; then
+
+if [ "$UCODEBOOL" = "y" ]; then
     choice "Would you like [I]ntel or [A]MD" "" INTELORAMD
 fi
 
@@ -142,7 +143,7 @@ info "Successfully generated the FileSystem table"
 
 # Copy the new script to the new root directory
 
-cp -f archmatic/{mainline/chrooted.sh,colors,functions} /mnt
+cp -f archmatic/{chrooted.sh,colors,functions} /mnt
 
 touch /mnt/values
 cat << EOF > /mnt/values
