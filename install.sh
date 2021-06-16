@@ -79,8 +79,6 @@ case $KERNELCHOICE in
         ;;
 esac
 
-sed -i -e 's/#ParallelDownloads\ =\ 5/ParallelDownloads\ =\ 5/g' /etc/pacman.conf
-
 # Sets ntp on the system clock
 
 info "Setting ntp"
